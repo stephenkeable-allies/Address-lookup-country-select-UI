@@ -1,4 +1,4 @@
-# Address-lookup-country-select-UI
+# Address lookup country select UI
 Bootstrap and jQuery based UI example for address lookup with the country select as an input group button with dropdown.
 
 ### Uses
