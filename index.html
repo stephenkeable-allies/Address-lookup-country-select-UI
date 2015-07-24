@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>New Country Dropdown</title>
+
+    <!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	
+	<!--
+	
+		Uses the CSS vector based country flasg from - http://lipis.github.io/flag-icon-css/
+	
+	-->
+	<link href="css/flag-icon.min.css" rel="stylesheet">
+	
+	<style>
+		body { padding: 50px; }
+		#country-dropdown { height: 250px; overflow: scroll; overflow-x: hidden; overflow-y: scroll; }
+		#country-dropdown .flag-icon { margin-right: 10px; }
+		#country-dropdown a.selected { background-color: #f5f5f5; }
+		@media (max-width:767px) {
+			body { padding: 50px 10px; }
+			#country-dropdown a { padding: 9px 20px; }
+			.small-find-address-button { width: 100%; margin-top:10px; }
+		}
+	</style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="input-group">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Change country"><span id="country-dropdown-button"></span> <span class="caret"></span></button>
+        <ul class="dropdown-menu dropdown-menu-left" id="country-dropdown">
+        	
+        </ul>
+      </div><!-- /btn-group -->
+      <input type="text" class="form-control" aria-label="Postcode or part of address" placeholder="Postcode or part of address">
+      <div class="input-group-btn hidden-xs">
+        <button type="button" class="btn btn-primary">Find Address</button>     
+      </div><!-- /btn-group -->
+    </div><!-- /input-group -->
+    <button type="button" class="btn btn-primary visible-xs-block small-find-address-button">Find Address</button>  
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	
+	<script>
+		$(document).ready(function() {
+		
+			// Obtain your API key by signing up at www.alliescomputing.com
+			var api_key = "";
+		
+			// URL for the country list endpoint
+			var country_url = "https://ws.postcoder.com/pcw/"+api_key+"/country/";
+			// URL for the IP to geo location endpoint
+			var geoip_url = "https://ws.postcoder.com/pcw/"+api_key+"/geolocate/ip/";
+		
+			// First we grab the country list from the API using ajax
+			$.ajax(country_url).success(function(country_data) {
+		
+				// Then we iterate over the results and populate the country dropdown
+				$.each(country_data, function(key, country) {
+					$("#country-dropdown").append('<li><a href="#" id="country-'+country.iso2+'"><span class="flag-icon flag-icon-'+country.iso2.toLowerCase()+'" title="'+country.countryname+'"></span>'+country.countryname+'</a></li>');
+				});
+			
+				// Grab the country of the current IP address via ajax
+				$.ajax(geoip_url).success(function(geoip_data) {
+					
+					// Set the selected country in the drop down list
+					$("#country-dropdown-button").addClass('flag-icon');
+					$("#country-dropdown-button").addClass('flag-icon-' + geoip_data.iso2code.toLowerCase());
+				
+					$("#country-"+ geoip_data.iso2code).addClass("selected");
+					
+				});
+				
+				// Set up an event handler for when some clicks an element in the dropdown
+				$("#country-dropdown a").on("click", function(e) {
+				
+					e.preventDefault();
+					var selected_country = $(this).attr("id").replace("country-","").toLowerCase();
+					
+					// Highlight the selected country
+					$("#country-dropdown a").removeClass("selected");
+					$(this).addClass("selected");
+					
+					// Swap the flag icon on the dropdown button
+					$("#country-dropdown-button").attr("class", "flag-icon flag-icon-"+selected_country);
+				
+				});
+			
+			});
+		
+		});
+		
+	</script>
+  </body>
+</html>
